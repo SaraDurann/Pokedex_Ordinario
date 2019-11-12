@@ -23,6 +23,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import static org.sara.Pokedex.utils.NetworkUtils.createUrl;
+import static org.sara.Pokedex.utils.NetworkUtils.makeHttpRequest;
+
 public class MainActivity extends AppCompatActivity implements PokemonItemListener {
 
 
@@ -37,11 +40,11 @@ public class MainActivity extends AppCompatActivity implements PokemonItemListen
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(new PokemonAdapter(ListDataHelper.provideElements(), this));
     }
+
     @Override
     public void onPokemonClicked(int position) {
         Toast.makeText(this, "Positionl: " + position, Toast.LENGTH_SHORT).show();
     }
-
 
 
     private class JsonAsyncTask extends AsyncTask<Void, Void, List<PokemonShort>> {
@@ -51,9 +54,18 @@ public class MainActivity extends AppCompatActivity implements PokemonItemListen
 
         @Override
         protected List<PokemonShort> doInBackground(Void... voids) {
-            AppDatabase db = AppDataBaseSingleton.getInstance(getApplicationContext()).appDatabase;
-            return db.pokemonDao().getAll();
+            URL url = createUrl("https://pokeapi.co/api/v2/pokemon?limit=107&offset=386");
+            // Hacemos la petición. Ésta puede tirar una exepción.
+            String jsonResponse = "";
+            try {
+                jsonResponse = makeHttpRequest(url);
+                listapokemon(jsonResponse);
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Problem making the HTTP request.", e);
+            }
+            return null;
         }
+
         @Override
         protected void onPostExecute(List<PokemonShort> pokemonShortList) {
             super.onPostExecute(pokemonShortList);
@@ -61,22 +73,7 @@ public class MainActivity extends AppCompatActivity implements PokemonItemListen
                 updatePokemonList(pokemonShortList);
             }
         }
-        @Override
-        protected String doInBackground(String... urls) {
 
-            // Creamos el objeto URL desde el string que recibimos.
-            if (urls.length == 0) return "";
-            URL url = createUrl(urls[0]);
-            // Hacemos la petición. Ésta puede tirar una exepción.
-            String jsonResponse = "";
-            try {
-                jsonResponse = makeHttpRequest(url);
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Problem making the HTTP request.", e);
-            }
-            return jsonResponse;
-        }
-//Array
         private List<PokemonShort> listapokemon(String jsonStr) {
             try {
                 JSONObject jsonObj = new JSONObject(jsonStr);
@@ -95,7 +92,6 @@ public class MainActivity extends AppCompatActivity implements PokemonItemListen
         }
 
     }
-
 
 
 }
