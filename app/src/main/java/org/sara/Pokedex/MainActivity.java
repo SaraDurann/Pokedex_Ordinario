@@ -24,6 +24,10 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class MainActivity extends AppCompatActivity implements PokemonItemListener {
+
+
+    private String LOG_TAG;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,8 +44,10 @@ public class MainActivity extends AppCompatActivity implements PokemonItemListen
 
 
 
-    private class GetPokemonsAsyncTask extends AsyncTask<Void, Void, List<PokemonShort>> {
-        String url= jsonArray.getJSONObject().getString("url");
+    private class JsonAsyncTask extends AsyncTask<Void, Void, List<PokemonShort>> {
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
 
         @Override
         protected List<PokemonShort> doInBackground(Void... voids) {
@@ -70,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements PokemonItemListen
             }
             return jsonResponse;
         }
-
+//Array
         private List<PokemonShort> listapokemon(String jsonStr) {
             try {
                 JSONObject jsonObj = new JSONObject(jsonStr);
