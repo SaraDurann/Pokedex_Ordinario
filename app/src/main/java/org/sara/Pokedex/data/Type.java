@@ -7,7 +7,7 @@ import org.sara.morelists.R;
 
 public class Type extends androidx.appcompat.app.AppCompatActivity {
     private String name;
-    private String demangerelations;
+    private String damageRelations;
     private String id;
 
 
